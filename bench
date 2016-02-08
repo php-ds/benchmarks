@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function exists {
+    command -v $1 >/dev/null 2>&1 || return 1
+}
+
+function confirm {
+    echo -ne "$1 (y/n): "
+    read -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        return 1
+    fi
+}
+
+# Generate the JSON results
+if php -d extension=ds.so generator.php; then
+
+    # Generate the HTML report
+    mkdir -p reports
+    report="reports/report.`date +%Y_%m_%d_%H_%M_%S`.html"
+    php reporter.php > $report
+
+    echo -e "\nHTML report created: $report"
+
+    if confirm "Would you like to open it?"; then
+
+        # Ubuntu
+        if exists xdg-open; then
+            xdg-open $report
+
+    	# OS X
+        elif exists open; then
+        	open $report
+
+        else
+        	echo "Couldn't open file."
+        fi
+    fi
+fi
