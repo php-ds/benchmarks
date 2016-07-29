@@ -14,7 +14,7 @@ function confirm {
 }
 
 # Generate the JSON results
-if php -d extension=ds.so generator.php; then
+if php generator.php; then
 
     # Generate the HTML report
     mkdir -p reports

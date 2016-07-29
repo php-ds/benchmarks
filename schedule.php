@@ -48,15 +48,23 @@ return [
     //     ]],
     // ],
 
-    // 'Sequence::push' => [
-    //     [MEDIUM, [
-    //         PHP_ARRAY,
-    //         // SPL_FA,
-    //         SPL_DLL,
-    //         VECTOR,
-    //         DEQUE,
-    //     ]],
-    // ],
+    'Sequence::push (allocated)' => [
+        [MEDIUM, [
+            SPL_FA,
+            VECTOR,
+            DEQUE,
+        ]],
+    ],
+
+    'Sequence::push' => [
+        [MEDIUM, [
+            PHP_ARRAY,
+            SPL_FA,
+            SPL_DLL,
+            VECTOR,
+            DEQUE,
+        ]],
+    ],
 
     // 'Sequence::unshift' => [
     //     [MEDIUM, [

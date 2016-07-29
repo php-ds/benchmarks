@@ -1,9 +1,17 @@
 <?php
 
+use Ds\Deque;
+use Ds\Map;
+use Ds\PriorityQueue;
+use Ds\Queue;
+use Ds\Set;
+use Ds\Stack;
+use Ds\Vector;
+
 /**
  * Number of times to run through each benchmark to produce an average.
  */
-define("TRIALS", 10);
+define("TRIALS", 20);
 
 define("SMALL",     [1 <<  9, 1 << 14]);
 define("MEDIUM",    [1 << 15, 1 << 20]);
@@ -14,15 +22,12 @@ define("LARGE",     [1 << 19, 1 << 24]);
  */
 define("SAMPLES", 1000);
 
-/**
- *
- */
-define("INCREMENTAL", 1);
 
 /**
- *
+ * Determines the type of benchmark.
  */
-define("EXPONENTIAL", 2);
+define("INCREMENTAL", 0);
+define("EXPONENTIAL", 1);
 
 /**
  *
@@ -48,7 +53,7 @@ $a = null; // array or collection
  */
 return [
 
-    'Stack::pop' => [INCREMENTAL, [
+    'Stack::pop' => [ INCREMENTAL, [
         SPL_STACK => [
             function($n) { global $a; $a = new SplStack(); for (; $n--; $a[] = rand()); },
             function($i) { global $a; $a->pop(); },
@@ -56,7 +61,7 @@ return [
         ],
 
         STACK => [
-            function($n) { global $a; $a = ds::stack(); for (; $n--; $a[] = rand()); },
+            function($n) { global $a; $a = new Stack(); for (; $n--; $a[] = rand()); },
             function($i) { global $a; $a->pop(); },
             function()   { global $a; $a = null; },
         ],
@@ -71,13 +76,13 @@ return [
         ],
 
         PRIORITY_QUEUE => [
-            function($n) { global $a; $a = ds::priority_queue(); },
+            function($n) { global $a; $a = new PriorityQueue(); },
             function($i) { global $a; $a->push(rand(), rand());  },
             function()   { global $a; $a = null; },
         ],
 
         QUEUE => [
-            function($n) { global $a; $a = ds::queue(); },
+            function($n) { global $a; $a = new Queue(); },
             function($i) { global $a; $a->push(rand()); rand(); },
             function()   { global $a; $a = null; },
         ]
@@ -93,7 +98,7 @@ return [
         ],
 
         MAP => [
-            function($n) { global $a; $a = ds::map(); },
+            function($n) { global $a; $a = new Map(); },
             function($i) { global $a; $a[rand(0, $i * 2)] = rand(); },
             function()   { global $a; $a = null; },
         ],
@@ -108,7 +113,7 @@ return [
         ],
 
         MAP => [
-            function($n) { global $a; $a = ds::map(); for (; $n--; $a[$n] = rand()); },
+            function($n) { global $a; $a = new Map(); for (; $n--; $a[$n] = rand()); },
             function($i) { global $a; unset($a[$i]); },
             function()   { global $a; $a = null; },
         ],
@@ -123,7 +128,7 @@ return [
         ],
 
         SET => [
-            function($n) { global $a; $a = ds::set();  },
+            function($n) { global $a; $a = new Set();  },
             function($i) { global $a; $n = $i; for (; $n--; $a[] = rand(1, $i / 2)); $a->toArray(); },
             function()   { global $a; $a = null; },
         ]
@@ -138,7 +143,7 @@ return [
         ],
 
         SET => [
-            function($n) { global $a; $a = ds::set(); },
+            function($n) { global $a; $a = new Set(); },
             function($i) { global $a; $a[] = new \stdClass(); },
             function()   { global $a; $a = null; },
         ]
@@ -159,14 +164,35 @@ return [
         ],
 
         VECTOR => [
-            function($n) { global $a; $a = ds::vector(range(1, $n)); },
+            function($n) { global $a; $a = new Vector(range(1, $n)); },
             function($i) { global $a; $a->unshift(rand()); },
             function()   { global $a; $a = null; },
         ],
 
         DEQUE => [
-            function($n) { global $a; $a = ds::deque(range(1, $n)); },
+            function($n) { global $a; $a = new Deque(range(1, $n)); },
             function($i) { global $a; $a->unshift(rand()); },
+            function()   { global $a; $a = null; },
+        ],
+    ]],
+
+    'Sequence::push (allocated)' => [ INCREMENTAL, [
+
+        SPL_FA => [
+            function($n) { global $a; $a = new SplFixedArray($n); },
+            function($i) { global $a; $a[$i] = rand(); },
+            function()   { global $a; $a = null; },
+        ],
+
+        VECTOR => [
+            function($n) { global $a; $a = new Vector(); $a->allocate($n); },
+            function($i) { global $a; $a[] = rand(); },
+            function()   { global $a; $a = null; },
+        ],
+
+        DEQUE => [
+            function($n) { global $a; $a = new Deque(); $a->allocate($n); },
+            function($i) { global $a; $a[] = rand(); },
             function()   { global $a; $a = null; },
         ],
     ]],
@@ -192,13 +218,13 @@ return [
         ],
 
         VECTOR => [
-            function($n) { global $a; $a = ds::vector(); },
+            function($n) { global $a; $a = new Vector(); },
             function($i) { global $a; $a[] = rand(); },
             function()   { global $a; $a = null; },
         ],
 
         DEQUE => [
-            function($n) { global $a; $a = ds::deque(); },
+            function($n) { global $a; $a = new Deque(); },
             function($i) { global $a; $a[] = rand(); },
             function()   { global $a; $a = null; },
         ],
@@ -219,13 +245,13 @@ return [
         ],
 
         VECTOR => [
-            function($n) { global $a; $a = ds::vector(range(1, $n)); },
+            function($n) { global $a; $a = new Vector(range(1, $n)); },
             function($i) { global $a; $a->pop(); },
             function()   { global $a; $a = null; },
         ],
 
         DEQUE => [
-            function($n) { global $a; $a = ds::deque(range(1, $n)); },
+            function($n) { global $a; $a = new Deque(range(1, $n)); },
             function($i) { global $a; $a->pop(); },
             function()   { global $a; $a = null; },
         ],

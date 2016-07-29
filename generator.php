@@ -7,6 +7,10 @@ date_default_timezone_set('UTC');
  */
 ini_set('memory_limit', -1);
 
+if ( ! extension_loaded('ds')) {
+    die('ds extension either not installed or not enabled');
+}
+
 /**
  *
  */
